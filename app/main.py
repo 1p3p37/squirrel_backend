@@ -7,7 +7,6 @@ from app.api.api import app_v1
 from app.api.debug.api import app_debug
 from app.core.config import settings
 
-# from app.services.callback import CallbackStream
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

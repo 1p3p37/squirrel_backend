@@ -13,8 +13,3 @@ class Admin(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     auth_token = Column(String, nullable=False, default=pyotp.random_base32())
-
-    def get_qr_code_link(self):
-        return pyotp.totp.TOTP(self.auth_token).provisioning_uri(
-            name=self.email, issuer_name=settings.project_name
-        )

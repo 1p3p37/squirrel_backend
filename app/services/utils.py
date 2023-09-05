@@ -2,11 +2,9 @@ from typing import Generator
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal
 
 
-def create_insert_data_procedure(db: Session = SessionLocal):
-    db = SessionLocal()
+def create_insert_data_procedure(db: Session):
     create_procedure_sql = text(
         """
         CREATE OR REPLACE FUNCTION insert_random_data()
@@ -25,8 +23,7 @@ def create_insert_data_procedure(db: Session = SessionLocal):
         db.close()
 
 
-def create_insert_data_procedure(db: Session = SessionLocal):
-    db = SessionLocal()
+def create_high_trigger_procedure(db: Session):
     create_procedure_sql = text(
         """
         CREATE OR REPLACE FUNCTION record_trigger()

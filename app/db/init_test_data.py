@@ -8,7 +8,6 @@ from app.db.session import SessionLocal
 def init_db():
     db = SessionLocal()
 
-
     users = []
     for _ in range(5):
         user = {
@@ -25,6 +24,7 @@ def init_db():
     users_ids = [user.id for user in users]
     for _ in range(50):
         user_id = random.choice(users_ids)
+
 
 if __name__ == "__main__":
     init_db()
