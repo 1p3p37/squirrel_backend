@@ -1,14 +1,10 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
 from app.db.session import SessionLocal
 
 
 class DatabaseHandler:
-    def call_stored_procedure():
-        db = SessionLocal()
-        try:
-            db.execute("SELECT insert_random_data()")
-            db.commit()
-        finally:
-            db.close()
+    async def call_stored_procedure():
+        async with SessionLocal() as db:
+            async with db.begin():
+                await db.execute("SELECT insert_random_data()")

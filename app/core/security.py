@@ -1,5 +1,3 @@
-import random
-import string
 from datetime import datetime, timedelta
 from typing import Any, Union
 
@@ -21,10 +19,10 @@ def create_access_token(
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(
-            minutes=settings.access_token_expire_minutes
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
     to_encode = {"exp": expire, "sub": str(subject)}
-    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
@@ -34,10 +32,3 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
-
-
-def generate_password(length: int = settings.password_length) -> str:
-    symbols = string.digits + string.ascii_uppercase + string.ascii_lowercase
-    temp = random.sample(symbols, length)
-    password = "".join(temp)
-    return password

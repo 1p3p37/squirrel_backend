@@ -42,9 +42,6 @@ migrate:
 shell:
 	sudo ${DOCKER_COMPOSE} exec web python -m ptpython
 
-create-admin:
-	sudo ${DOCKER_COMPOSE} exec web python app/management/create_admin.py
-
 init-db:
 	sudo ${DOCKER_COMPOSE} exec web python app/db/init_db.py
 

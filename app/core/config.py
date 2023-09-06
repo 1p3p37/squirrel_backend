@@ -5,15 +5,10 @@ import secrets
 from dataclasses import field
 from functools import cached_property
 
-# from typing import TYPE_CHECKING
-
 import yaml
 from pydantic import AnyHttpUrl, PostgresDsn, condecimal
 from pydantic.dataclasses import dataclass
 
-
-# if TYPE_CHECKING:
-#     from app.services.contracts.voting import VotingContract
 
 DB_URL = "postgres://{user}:{password}@{hostname}:{port}/{db}".format(
     user=os.getenv("POSTGRES_USER", "postgres"),
@@ -27,9 +22,6 @@ DB_URL = "postgres://{user}:{password}@{hostname}:{port}/{db}".format(
 @dataclass
 class Settings:
     project_name: str
-    redis_host: str
-    redis_port: int
-    is_debug: bool = False
     api_string: str = "/api"
     api_debug_str: str = "/api/debug"
     api_key: str = secrets.token_urlsafe(32)
@@ -42,7 +34,7 @@ class Settings:
     @cached_property
     def sqlalchemy_database_uri(self) -> PostgresDsn:
         return PostgresDsn.build(
-            scheme="postgresql",
+            scheme="postgresql+asyncpg",
             user=os.getenv("POSTGRES_USER"),
             password=os.getenv("POSTGRES_PASSWORD"),
             host=os.getenv("POSTGRES_HOST"),

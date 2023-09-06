@@ -1,5 +1,3 @@
-# from app import crud, custom_types
-from app.core.config import settings
 from app.db.session import SessionLocal
 from app.services.utils import (
     create_high_trigger_procedure,

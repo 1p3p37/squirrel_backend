@@ -30,7 +30,7 @@ def create_high_trigger_procedure(db: Session):
         RETURNS TRIGGER AS $$
         BEGIN
             IF NEW.value > 9 THEN
-                INSERT INTO high_values (time)
+                INSERT INTO high_value (time)
                 VALUES (NEW.time);
             END IF;
             RETURN NEW;

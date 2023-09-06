@@ -4,7 +4,6 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.api import app_v1
-from app.api.debug.api import app_debug
 from app.core.config import settings
 
 
