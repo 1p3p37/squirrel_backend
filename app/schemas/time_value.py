@@ -1,5 +1,6 @@
-from pydantic import BaseModel, condecimal
+from pydantic import BaseModel, condecimal, validator
 from datetime import datetime
+from decimal import Decimal
 
 
 # Shared properties
@@ -25,7 +26,12 @@ class TimeValue(TimeValueBase):
     class Config:
         orm_mode = True
 
+
 # Aggregated T V to return via API
 class AggregatedTimeValue(BaseModel):
     time: datetime
-    average_value: condecimal(max_digits=10, decimal_places=2)
+    average_value: Decimal
+
+    @validator("average_value", pre=True)
+    def round_average_value(cls, value):
+        return round(float(value), 2)

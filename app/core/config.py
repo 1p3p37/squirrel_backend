@@ -20,11 +20,20 @@ DB_URL = "postgres://{user}:{password}@{hostname}:{port}/{db}".format(
 
 
 @dataclass
+class SQLQueries:
+    create_insert_data_procedure: str
+    create_high_trigger_procedure: str
+    create_high_value_trigger: str
+    create_aggregated_data_view: str
+
+
+@dataclass
 class Settings:
     project_name: str
     api_string: str = "/api"
     api_debug_str: str = "/api/debug"
     api_key: str = secrets.token_urlsafe(32)
+    sql_queries: SQLQueries = field(default_factory=SQLQueries)
     call_stored_procedure_task_interval_seconds: int = 5
     access_token_expire_minutes: int = 60 * 24 * 7  # 7 days
     backend_cors_origins: list[AnyHttpUrl] = field(default_factory=list)
@@ -41,9 +50,9 @@ class Settings:
             path=f"/{os.getenv('POSTGRES_DB') or ''}",
         )
 
-    @cached_property
-    def redis_url(self) -> str:
-        return f"redis://{self.redis_host}:{self.redis_port}/0"
+    # @cached_property
+    # def redis_url(self) -> str:
+    #     return f"redis://{self.redis_host}:{self.redis_port}/0"
 
 
 with open(os.environ["CONFIG"], "r") as f:

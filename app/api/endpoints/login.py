@@ -28,7 +28,7 @@ async def login_access_token(
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     return {
         "access_token": security.create_access_token(
             user.id, expires_delta=access_token_expires

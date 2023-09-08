@@ -5,10 +5,7 @@ build-all:
 
 build-web:
 	sudo ${DOCKER_COMPOSE} up --build -d --force-recreate web
-
-build-scanner:
-	sudo ${DOCKER_COMPOSE} up --build -d --force-recreate scanner
-
+	
 restart-web:
 	sudo ${DOCKER_COMPOSE} restart web
 

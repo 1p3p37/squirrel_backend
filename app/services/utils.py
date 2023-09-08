@@ -1,50 +1,26 @@
-from typing import Generator
-
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+
+from app.db.session import SessionLocal
+from app.core.config import settings
 
 
-def create_insert_data_procedure(db: Session):
-    create_procedure_sql = text(
-        """
-        CREATE OR REPLACE FUNCTION insert_random_data()
-        RETURNS void AS $$
-        BEGIN
-            INSERT INTO time_value (time, value)
-            VALUES (NOW(), FLOOR(RANDOM() * 11));
-        END;
-        $$ LANGUAGE plpgsql;
-        """
-    )
+async def execute_query(sql: str):
     try:
-        db.execute(create_procedure_sql)
-        db.commit()
-    finally:
-        db.close()
+        async with SessionLocal() as db:
+            async with db.begin():
+                await db.execute(text(sql))
+    except Exception as e:
+        await db.rollback()
+        raise e
 
 
-def create_high_trigger_procedure(db: Session):
-    create_procedure_sql = text(
-        """
-        CREATE OR REPLACE FUNCTION record_trigger()
-        RETURNS TRIGGER AS $$
-        BEGIN
-            IF NEW.value > 9 THEN
-                INSERT INTO high_value (time)
-                VALUES (NEW.time);
-            END IF;
-            RETURN NEW;
-        END;
-        $$ LANGUAGE plpgsql;
-        
-        CREATE TRIGGER high_value_trigger
-        AFTER INSERT ON time_value
-        FOR EACH ROW
-        EXECUTE FUNCTION record_trigger();
-        """
-    )
+async def execute_select_query(sql: str):
     try:
-        db.execute(create_procedure_sql)
-        db.commit()
-    finally:
-        db.close()
+        async with SessionLocal() as db:
+            async with db.begin():
+                result = await db.execute(text(sql))
+                data = result.fetchall()
+                return data
+    except Exception as e:
+        await db.rollback()
+        raise e
