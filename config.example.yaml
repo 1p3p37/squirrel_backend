@@ -9,3 +9,43 @@ backend_cors_origins: [http://localhost:5050/]
 
 redis_host: redis
 redis_port: 6379
+
+sql_queries:
+  create_insert_data_procedure:
+    CREATE OR REPLACE FUNCTION insert_random_data()
+    RETURNS void AS $$
+    BEGIN
+        INSERT INTO time_value (time, value)
+        VALUES (NOW(), FLOOR(RANDOM() * 11));
+    END;
+    $$ LANGUAGE plpgsql;
+
+  create_high_trigger_procedure:
+    CREATE OR REPLACE FUNCTION record_trigger()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        IF NEW.value > 9 THEN
+            INSERT INTO high_value (time)
+            VALUES (NEW.time);
+        END IF;
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    
+  create_high_value_trigger:
+    CREATE OR REPLACE TRIGGER high_value_trigger
+    AFTER INSERT ON time_value
+    FOR EACH ROW
+    EXECUTE FUNCTION record_trigger();
+
+  create_aggregated_data_view:
+    CREATE OR REPLACE VIEW aggregated_data AS
+    SELECT
+        date_trunc('minute', time) AS time,
+        avg(value) AS average_value
+    FROM
+        time_value
+    GROUP BY
+        date_trunc('minute', time)
+    ORDER BY
+        time DESC;
