@@ -17,6 +17,7 @@ router = APIRouter()
 async def get_aggregated_data(
     skip: int = 0,
     limit: int = 10,
+    current_user: models.User = Depends(deps.get_current_user),
 ):
     """
     Получает поминутно агрегированные данные таблицы `time_value`.

@@ -6,7 +6,7 @@ from dataclasses import field
 from functools import cached_property
 
 import yaml
-from pydantic import AnyHttpUrl, PostgresDsn, condecimal
+from pydantic import AnyHttpUrl, PostgresDsn, EmailStr
 from pydantic.dataclasses import dataclass
 
 
@@ -49,6 +49,10 @@ class Settings:
             host=os.getenv("POSTGRES_HOST"),
             path=f"/{os.getenv('POSTGRES_DB') or ''}",
         )
+
+    EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
+    FIRST_SUPERUSER: EmailStr = "supersu@example.com"
+    FIRST_SUPERUSER_PASSWORD: str = "admin1234"
 
     # @cached_property
     # def redis_url(self) -> str:
