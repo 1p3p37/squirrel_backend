@@ -7,6 +7,10 @@ access_token_expire_minutes: 10080  # 7 days
 password_length: 12
 backend_cors_origins: [http://localhost:5050/]
 
+EMAIL_TEST_USER: test@example.com  
+FIRST_SUPERUSER: supersu@example.com
+FIRST_SUPERUSER_PASSWORD: admin1234
+
 redis_host: redis
 redis_port: 6379
 

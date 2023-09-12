@@ -2,6 +2,7 @@ import asyncio
 
 from app.db.session import SessionLocal
 from app.core.config import settings
+from app.db.handlers import DbHandler
 from app.services.utils import execute_query
 from app import crud, schemas
 
@@ -20,6 +21,11 @@ async def init_db():
             is_superuser=True,
         )
         user = await crud.user.create(db, obj_in=user_in)
+
+    if settings.is_test:
+        for i in range(350):
+            await DbHandler.select_insert_random_data()
+
 
 
 if __name__ == "__main__":

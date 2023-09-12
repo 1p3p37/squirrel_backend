@@ -5,7 +5,7 @@ build-all:
 
 build-web:
 	sudo ${DOCKER_COMPOSE} up --build -d --force-recreate web
-	
+
 restart-web:
 	sudo ${DOCKER_COMPOSE} restart web
 
@@ -14,7 +14,7 @@ stop:
 
 logs:
 	sudo ${DOCKER_COMPOSE} logs -f
-	
+
 logs-web:
 	sudo ${DOCKER_COMPOSE} logs -f web
 
@@ -23,11 +23,11 @@ logs-redis:
 
 logs-db:
 	sudo ${DOCKER_COMPOSE} logs -f db
-	
+
 logs-scheduler:
 	sudo ${DOCKER_COMPOSE} logs -f scheduler
 
-psql: 
+psql:
 	sudo ${DOCKER_COMPOSE} exec db psql -U ${POSTGRES_USER}
 
 makemigrations:
@@ -43,12 +43,12 @@ init-db:
 	sudo ${DOCKER_COMPOSE} exec web python app/db/init_db.py
 
 init-test-db:
-	sudo ${DOCKER_COMPOSE} exec web python app/db/init_test_data.py
+	sudo ${DOCKER_COMPOSE} -f test.yml exec web python app/db/init_db.py
 
 test:
-	sudo ${DOCKER_COMPOSE}  -f test.yml up --build --abort-on-container-exit --force-recreate
+	sudo ${DOCKER_COMPOSE} -f test.yml up --build --abort-on-container-exit --force-recreate
 
 entrypoint:
 	sudo ${DOCKER_COMPOSE} exec web bash ./entrypoint.sh
 
-init-build: build-all entrypoint makemigrations migrate init-db 
+init-build: build-all entrypoint makemigrations migrate init-db

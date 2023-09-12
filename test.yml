@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+
+  db-test:
+    image: postgres:14.3
+    env_file: .env.example
+    container_name: db-test
+
+
+  web-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    env_file: .env.example
+    environment:
+      - IS_TEST=true
+    depends_on:
+      - db-test
+    volumes:
+      - ./:/app/
+    command: bash -c "alembic upgrade head && alembic revision --autogenerate && alembic upgrade head && python3 app/db/init_db.py && pytest --cov=app --cov-report=term-missing app/tests"
+    container_name: web-test
