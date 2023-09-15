@@ -31,6 +31,7 @@ class SQLQueries:
 class Settings:
     project_name: str
     api_string: str = "/api"
+    api_test_string: str = "http://test"
     api_debug_str: str = "/api/debug"
     api_key: str = secrets.token_urlsafe(32)
     sql_queries: SQLQueries = field(default_factory=SQLQueries)

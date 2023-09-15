@@ -1,46 +1,54 @@
-# from datetime import timedelta
-from typing import Dict, Generator
+from typing import Dict
 
 # import pyotp
+import pytest_asyncio
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-from mixer.backend.sqlalchemy import Mixer
 
-from app.db.session import SessionLocal
+# from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from httpx import AsyncClient
+
+from app.db.session import SessionLocal, create_async_engine
 from app.main import app
 from app.core.config import settings
 from app.tests.utils.user import authentication_token_from_email
 from app.tests.utils.utils import get_superuser_token_headers
 
 
-@pytest.fixture(scope="session")
-def db():
-    yield SessionLocal()
-
-
-# @pytest.fixture()
-# def db(session_local):
-#     mixer = Mixer(session=session_local, commit=True)
-#     yield mixer
-
-
+# @pytest.fixture(scope="session")
+# @pytest_asyncio.fixture(scope="session")
+# async def db():
+#     with SessionLocal() as _db:
+#         yield _db
+# yield SessionLocal()
 @pytest.fixture(scope="module")
-def client():
-    with TestClient(app) as c:
-        yield c
+async def db() -> AsyncSession:
+    async with SessionLocal() as session:
+        yield session
+
+
+# @pytest_asyncio.fixture(scope="module")
+@pytest.fixture(scope="module")
+async def client() -> AsyncClient:
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac
+
 
 # Fixture to get superuser token headers
-@pytest.fixture(scope="module")
-async def superuser_token_headers(client: TestClient) -> Dict[str, str]:
+@pytest_asyncio.fixture(scope="module")
+async def superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
     """
     Get token headers for a superuser.
     """
     return await get_superuser_token_headers(client)
 
+
 # Fixture to get normal user token headers
-@pytest.fixture(scope="function")
-async def normal_user_token_headers(client: TestClient, db: Session) -> Dict[str, str]:
+@pytest_asyncio.fixture(scope="module")
+async def normal_user_token_headers(
+    client: AsyncClient, db: AsyncSession
+) -> Dict[str, str]:
     """
     Get token headers for a normal user.
     """
@@ -48,31 +56,3 @@ async def normal_user_token_headers(client: TestClient, db: Session) -> Dict[str
         client=client, email=settings.EMAIL_TEST_USER, db=db
     )
 
-
-# @pytest.fixture()
-# def user(db = mixer) -> User:
-#     new_user = schemas.UserCreate(
-#         email="user@user.com",
-#         password="password",
-#         # is_superuser=True,
-#     )
-#     user = crud.user.get_by_email(db=db, email=new_user["email"])
-#     if user is None:
-#         user = crud.user.create(db=db, obj_in=new_user)
-#     return user
-
-# @pytest.mark.asyncio
-# async def test_create_user(client):
-#     # Создаем тестового пользователя с помощью mixer
-#     user_data = mixer.blend(User)
-
-#     # Отправляем запрос на создание пользователя
-#     response = client.post("/users/create", json=user_data.dict())
-
-#     # Проверяем, что статус код ответа равен 200 (Успешное создание пользователя)
-#     assert response.status_code == 200
-
-#     # Проверяем, что в ответе есть поля пользователя и они соответствуют отправленным данным
-#     created_user = response.json()
-#     assert created_user["full_name"] == user_data.full_name
-#     assert created_user["email"] == user_data.email

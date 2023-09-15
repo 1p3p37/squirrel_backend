@@ -3,6 +3,9 @@ from typing import Dict
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from httpx import AsyncClient
+
 from app import crud
 from app.core.config import settings
 from app.models.user import User
@@ -15,11 +18,14 @@ async def user_authentication_headers(
 ) -> Dict[str, str]:
     data = {"username": email, "password": password}
 
-    r = await client.post(f"{settings.api_string}/login/access-token", data=data)
+    r = await client.post(
+        f"http://test{settings.api_string}/login/access-token", data=data
+    )
     response = r.json()
     auth_token = response["access_token"]
     headers = {"Authorization": f"Bearer {auth_token}"}
     return headers
+
 
 # Create a random user
 async def create_random_user(db: Session) -> User:
@@ -29,9 +35,10 @@ async def create_random_user(db: Session) -> User:
     user = await crud.user.create(db=db, obj_in=user_in)
     return user
 
+
 # Get authentication token from email
 async def authentication_token_from_email(
-    *, client: TestClient, email: str, db: Session
+    *, client: AsyncClient, email: str, db: Session
 ) -> Dict[str, str]:
     """
     Return a valid token for the user with given email.
@@ -47,4 +54,6 @@ async def authentication_token_from_email(
         user_in_update = UserUpdate(password=password)
         user = await crud.user.update(db, db_obj=user, obj_in=user_in_update)
 
-    return await user_authentication_headers(client=client, email=email, password=password)
+    return await user_authentication_headers(
+        client=client, email=email, password=password
+    )
